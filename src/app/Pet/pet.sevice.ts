@@ -1,6 +1,5 @@
 import { Injectable, Body } from "@nestjs/common";
 import { Pet } from "@prisma/client";
-import { promises } from "dns";
 import { PrismaService } from "src/prisma/prisma.service";
 import {CreatePetDto} from "./createPet.dto"
 import { UpdatePetDto } from "./updatePet.dto";

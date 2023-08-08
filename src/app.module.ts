@@ -5,6 +5,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PetModule } from './app/Pet/pet.module';
+import { BrandModule } from './app/brand/brand.module';
+import { PetAccessoriesModule } from './app/petAccessories/petAccessories.module';
 
 
 @Module({
@@ -18,6 +20,8 @@ import { PetModule } from './app/Pet/pet.module';
   PrismaModule,
   CategoryModule,
   PetModule,
+  BrandModule,
+  PetAccessoriesModule,
   
   ],
   controllers: [],
