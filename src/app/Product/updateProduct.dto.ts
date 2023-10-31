@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
- export class UpdatePetDto{
+ export class UpdateProductDto{
 @ApiProperty()
     
     name?: string;

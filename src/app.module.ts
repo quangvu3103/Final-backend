@@ -4,9 +4,9 @@ import { CategoryModule } from './app/category/category.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { PetModule } from './app/Pet/pet.module';
-import { BrandModule } from './app/brand/brand.module';
-import { PetAccessoriesModule } from './app/petAccessories/petAccessories.module';
+import {ProductModule } from './app/Product/product.module';
+import { OrderModule } from './app/order/order.module';
+import { OrderDetailModule } from './app/orderdetail/orderDetail.module';
 
 
 @Module({
@@ -19,9 +19,10 @@ import { PetAccessoriesModule } from './app/petAccessories/petAccessories.module
   UserModule,
   PrismaModule,
   CategoryModule,
-  PetModule,
-  BrandModule,
-  PetAccessoriesModule,
+  ProductModule,
+  OrderModule,
+  OrderDetailModule,
+
   
   ],
   controllers: [],

@@ -10,95 +10,86 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model Category{
-  id    String @default(cuid()) @id
-  name  String
-  pets   Pet[]
+model Category {
+  id       String    @id @default(cuid())
+  name     String
+  products Product[]
 }
 
-model PetAccessories{
-  id String @default(cuid()) @id
-  name String @unique
-  quantity Int
-  image String
-  title String
-  describe String
-  brands Brand @relation(fields: [brandId], references: [id])
-  brandId String
-}
 
-model Brand{
-  id String @default(cuid()) @id
-  name String @unique
-  PetAccessories PetAccessories[] 
-}
 
-model Pet {
-  id         String @default(cuid()) @id
-  name       String
-  category   Category   @relation(fields: [categoryId], references: [id])
-  categoryId  String
+
+model Product {
+  id           String        @id @default(cuid())
+  name         String
+  category     Category      @relation(fields: [categoryId], references: [id])
+  categoryId   String
+  price        Int
+  description  String
+  quantity     Int
+  images       ProductImg[]
   orderDetails OrderDetail[]
 }
 
-model User{
-  id         String @default(cuid()) @id
-  username       String
-  email String  @unique
-  password String 
-  address String
-  phone String
-  refreshToken RefreshToken?
-  userRole UserRole[]
-  orders Order[]
-
-  @@map(name:"users")
+model ProductImg {
+  id        String  @id @default(cuid())
+  url       String
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 }
 
+model User {
+  id           String        @id @default(cuid())
+  username     String
+  email        String        @unique
+  password     String
+  address      String
+  phone        String
+  refreshToken RefreshToken?
+  userRole     UserRole[]
+  orders       Order[]
+
+  @@map(name: "users")
+}
 
 model RefreshToken {
-  id         String @default(cuid()) @id
-  username       String
-  email String @unique
-  password String 
-  user   User   @relation(fields: [userId], references: [id])
-  userId  String  @unique
+  id       String @id @default(cuid())
+  username String
+  email    String @unique
+  password String
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String @unique
 }
 
-model Role{
-  id         String @default(cuid()) @id
-  name       String @unique
-  userRole    UserRole[]
+model Role {
+  id       String     @id @default(cuid())
+  name     String     @unique
+  userRole UserRole[]
 }
 
-model UserRole{
-  id String @default(cuid()) @id
+model UserRole {
+  id     String @id @default(cuid())
   role   Role   @relation(fields: [roleId], references: [id])
   roleId String
   user   User   @relation(fields: [userId], references: [id])
-  userId  String  @unique
+  userId String @unique
 }
 
-model Order{
-  id String @default(cuid()) @id
-  user User @relation(fields: [userId], references: [id])
-  userId String  @unique
-  totalPrice Int
+model Order {
+  id String @id @default(cuid())
+  user User @relation(fields: [userId], references: [id])    
+  dateOrder  DateTime  
+  userId       String        @unique
+  totalPrice   Int
   orderDetails OrderDetail[]
 }
 
-model OrderDetail{
-  id String @default(cuid()) @id
-  order Order @relation(fields: [orderId], references: [id])
-  orderId String  @unique
-  price Int
-  quantity Int
-  carId String
-  pet Pet @relation(fields: [carId], references: [id])
+model OrderDetail {
+  id        String  @id @default(cuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String  @unique
+  price     Int
+  quantity  Int
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
 }
-
-
-
-
-
