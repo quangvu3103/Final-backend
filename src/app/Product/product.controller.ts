@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Get, Post, Body, Put, Delete, Query, Param } from "@nestjs/common";
 import { ProductService } from "./product.sevice"
 import { CreateProductDto } from "./createProduct.dto";

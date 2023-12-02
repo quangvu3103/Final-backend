@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Put, Delete, Query, Param, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Body, Put, Delete, Query, Param, UseGuards, Patch } from "@nestjs/common";
 import { OrderService } from "./order.service";
 import { OrderDto } from "./order.Dto";
 import { Order } from "@prisma/client";
@@ -36,9 +36,9 @@ export class OrderController{
     }
 
 
-    @Put(':id')
-    async updatePet(@Query('id') id: string,@Body() order: OrderDto): Promise<Order>{
-        return await this.orderService.updateOrder(id, order);
+    @Patch()
+    async updatePet(@Body() order: OrderDto): Promise<Order>{
+        return await this.orderService.updateOrder(order);
     }
 
 }

@@ -1,12 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Body, Injectable } from "@nestjs/common";
+import { Body, ForbiddenException, Injectable } from "@nestjs/common";
 import { Order } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { OrderDto } from "./order.Dto";
-import { promises } from "dns";
-
-
-
 
 @Injectable()
 export class OrderService{
@@ -19,16 +15,36 @@ export class OrderService{
         return await this.prismaService.order.findMany()
     }
 
-    async createOrder(@Body() order : OrderDto): Promise<Order>{
-        return await this.prismaService.order.create({
-            data:order
+    async getCart(id: string):Promise<Order>{
+        return await this.prismaService.order.findUnique({
+            where:{
+                userId: id
+            }
         })
     }
 
-    async updateOrder(id: string, @Body() order: OrderDto): Promise<Order>{
+    async createOrder(@Body() order : OrderDto): Promise<Order>{
+        const currentOrder = await this.prismaService.order.findUnique({
+            where:{
+                id: order.id
+            }
+        })
+        let newOrder : any
+        if(!currentOrder){
+            newOrder = await this.prismaService.order.create({
+                data:order
+            })
+        }else(
+            newOrder = await this.updateOrder(order)
+        )
+
+        return newOrder 
+    }
+
+    async updateOrder(@Body() order: OrderDto): Promise<Order>{
         return await this.prismaService.order.update({
             where:{
-                id: id,
+                id: order.id,
             },
             data: {
                 ...order,

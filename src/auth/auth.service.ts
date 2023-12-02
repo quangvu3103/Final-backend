@@ -125,7 +125,7 @@ export class authSevice {
             role
         }
         const jwtString = await this.jwtService.signAsync(payload, {
-            expiresIn: '10m',
+            expiresIn: '3h',
             secret: this.configService.get('JWT_SECRET')
         })
         return {
@@ -154,7 +154,7 @@ export class authSevice {
                 password: hashedPassword
             }
         })
-        return await this.mailService.sendEmail('longqb08122001@gmail.com', 'vunqgcd191153@fpt.edu.vn', "hello long ngu", `New password is ${newPass}`)
+        return await this.mailService.sendEmail('quangvunguyen153@gmail.com', 'vunqgcd191153@fpt.edu.vn', "hello long ngu", `New password is ${newPass}`)
          
     }
 

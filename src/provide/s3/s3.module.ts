@@ -11,7 +11,7 @@ import { diskStorage } from 'multer';
     storage: diskStorage({
         destination:'./uploads',
     }),
-    limits:{fieldSize: 2000000},
+    limits:{fieldSize: 5000000},
     fileFilter: (req, file, callback) => {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
           req.fileValidationError = 'Only image files are allowed!';

@@ -22,13 +22,13 @@ export class UpdateProfileDTO{
     })
     phoneNumber?: string
 
-    @IsString()
+
     @ApiProperty({
         
     })
     url?: string
 
-    @IsString()
+
     @ApiProperty({
         
     })

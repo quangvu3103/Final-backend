@@ -18,4 +18,8 @@ export class FileService {
         return await this.s3Serivce.uploadFile(file, 'avatar/test/');
     }
 
+    async multiUpload(files: Express.Multer.File[]): Promise<string[]> {
+        return this.s3Serivce.uploadMultipleFiles(files, 'hotels/');
+      }
+    
 }

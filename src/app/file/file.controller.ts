@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Get, Post, Body, Put, Delete, Query, Param, UseGuards, Patch, UseInterceptors, UploadedFile } from "@nestjs/common";
+import { Controller, Get, Post, Body, Put, Delete, Query, Param, UseGuards, Patch, UseInterceptors, UploadedFile, UploadedFiles } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { MyJwtGuard } from "src/common/guard";
 import { FileService } from "./file.service";
@@ -23,6 +23,12 @@ export class FileController{
     return this.fileService.upload(file);
   }
 
-
+  @Post('/multiple-file-upload')
+  @UseInterceptors(FilesInterceptor('files', 5))
+  async uploadMultipleFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<string[]> {
+    return await this.fileService.multiUpload(files);
+  }
 
 }
