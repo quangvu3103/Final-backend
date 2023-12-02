@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Body, Injectable } from "@nestjs/common";
 import { Order } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";

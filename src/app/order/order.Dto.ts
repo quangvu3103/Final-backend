@@ -1,5 +1,6 @@
+/* eslint-disable prettier/prettier */
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class OrderDto {
     @ApiProperty()
@@ -9,4 +10,8 @@ export class OrderDto {
     @ApiProperty()
     @IsNumber()
     totalPrice: number;
+
+    @IsString()
+    @IsNotEmpty()
+    transactionId: string;
 }

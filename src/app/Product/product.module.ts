@@ -1,11 +1,11 @@
-import  {Module} from "@nestjs/common"
-import { ProductController } from "./product.controller";
-import { ProductService } from "./product.sevice";
+/* eslint-disable prettier/prettier */
+import { Module } from '@nestjs/common';
+import { ProductController } from './product.controller';
+import { ProductService } from './product.sevice';
 
 @Module({
-    imports:[],
-    controllers:[ProductController],
-    providers: [ProductService],
+  imports: [],
+  controllers: [ProductController],
+  providers: [ProductService],
 })
-
-export class ProductModule{}
+export class ProductModule {}

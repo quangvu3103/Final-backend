@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, Body } from "@nestjs/common";
 
 import { PrismaService } from "src/prisma/prisma.service";
@@ -7,11 +8,9 @@ import { Product } from "@prisma/client";
 
 @Injectable()
 export class ProductService{
-    constructor(
-        private prismaService : PrismaService,
-    ){}
+  constructor(private prismaService: PrismaService) {}
 
-    async getproduct():Promise<Product[]>{
+  async getproduct(): Promise<Product[]> {
         return  await this.prismaService.product.findMany({
             skip:0,
             take:6,
