@@ -21,6 +21,19 @@ export class ProductService{
 
     }
 
+    async getproductById(id: string): Promise<Product> {
+        return  await this.prismaService.product.findUnique({
+            where:{
+                id : id
+            },
+            include:{
+                images:true
+            }
+            
+        });
+
+    }
+
     async getproductByCategory(id: string):Promise<Product[]>{
         return  await this.prismaService.product.findMany({
             where:{

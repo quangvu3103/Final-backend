@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { OrderDetail } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { orderDetailsDto } from "./orderDetail.Dto";

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Controller, Post, Body, Put, Delete, Query } from "@nestjs/common";
 import { OrderDetailService } from "./orderDetail.service"
 import { OrderDetail } from "@prisma/client";

@@ -27,6 +27,11 @@ export class ProductController{
         return await this.productService.createproduct(product);
     }
 
+    @Get(':id')
+    async getProductById(@Param('id') id:string) :Promise<Product>{
+        return await this.productService.getproductById(id);
+    }
+
 
     @Put(':id')
     async updateProduct(@Query('id') id: string,@Body() product: UpdateProductDto): Promise<Product>{
