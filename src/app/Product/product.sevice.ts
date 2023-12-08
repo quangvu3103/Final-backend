@@ -5,6 +5,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import {CreateProductDto} from "./createProduct.dto"
 import { UpdateProductDto } from "./updateProduct.dto";
 import { Product } from "@prisma/client";
+import { max } from "class-validator";
 
 @Injectable()
 export class ProductService{
@@ -12,6 +13,9 @@ export class ProductService{
 
   async getproduct(): Promise<Product[]> {
         return  await this.prismaService.product.findMany({
+            where:{
+                isDelete: false
+            },
             skip:0,
             take:6,
             include:{
@@ -24,7 +28,8 @@ export class ProductService{
     async getproductById(id: string): Promise<Product> {
         return  await this.prismaService.product.findUnique({
             where:{
-                id : id
+                id : id,
+                isDelete: false
             },
             include:{
                 images:true
@@ -37,7 +42,8 @@ export class ProductService{
     async getproductByCategory(id: string):Promise<Product[]>{
         return  await this.prismaService.product.findMany({
             where:{
-                categoryId:id
+                categoryId:id,
+                isDelete: false
             },
             skip:0,
             take:6,
@@ -68,10 +74,50 @@ export class ProductService{
     }
 
     async deleteproduct(id: string){
-        return await this.prismaService.product.delete({
+        const orderDetailsExit = await this.prismaService.orderDetail.findMany({
+            where:{
+                productId: id,
+            },
+            include:{
+                order: true
+            }
+        })
+        for(let i=0; i< orderDetailsExit.length; i++){
+            const order = await this.prismaService.order.findUnique({
+                where:{
+                    id : orderDetailsExit[i].orderId,
+                    status: 'IN_PROGRESS'
+                }
+            })
+            if(order){
+                await this.prismaService.orderDetail.delete({
+                    where:{
+                        id : orderDetailsExit[i].id
+                    }
+                })
+            }
+        }
+        return await this.prismaService.product.update({
             where: {
                 id: id
+            },
+            data:{
+                isDelete: true
             }
         });
     }
+
+    async searchProduct(minPrice: string, maxPrice: string):Promise<Product[]>{
+
+        return await this.prismaService.product.findMany({
+            where:{
+                price:{
+                    gte: parseInt(minPrice),
+                    lte: parseInt(maxPrice)
+                }
+            }
+        })
+    }
+
+    
 }

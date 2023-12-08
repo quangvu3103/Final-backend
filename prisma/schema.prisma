@@ -27,6 +27,7 @@ model Product {
   price        Int
   description  String
   quantity     Int
+  isDelete     Boolean @default(false)
   images       ProductImg[]
   orderDetails OrderDetail[]
 }
@@ -77,17 +78,17 @@ model Order {
   id String @id @default(cuid())
   user User @relation(fields: [userId], references: [id])    
   dateOrder  DateTime  
-  userId       String        @unique
+  userId       String       
   totalPrice   Int
   status       OrderStatus    @default(IN_PROGRESS)
-  transactionId String
+  transactionId String?
   orderDetails OrderDetail[]
 }
 
 model OrderDetail {
   id        String  @id @default(cuid())
   order     Order   @relation(fields: [orderId], references: [id])
-  orderId   String  @unique
+  orderId   String  
   price     Int
   quantity  Int
   productId String

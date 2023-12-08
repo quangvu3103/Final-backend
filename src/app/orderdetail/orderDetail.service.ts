@@ -33,10 +33,31 @@ export class OrderDetailService{
     }
 
     async deleteOrderDetail(id: string){
-        return await this.prismaService.orderDetail.delete({
+
+        const orderDetail =  await this.prismaService.orderDetail.findUnique({
             where: {
                 id: id
             }
         });
+
+        const order =  await this.prismaService.order.findUnique({
+            where: {
+                id: orderDetail.orderId
+            }
+        });
+
+        await this.prismaService.order.update({
+            where: {
+                id: order.id
+            },data: {
+                totalPrice : order.totalPrice - orderDetail.price
+            }
+        });
+
+        return await this.prismaService.orderDetail.delete({
+            where:{
+                id : id
+            }
+        })
     }
 }

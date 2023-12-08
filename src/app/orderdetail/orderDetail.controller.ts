@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body, Put, Delete, Query } from "@nestjs/common";
+import { Controller, Post, Body, Put, Delete, Query, Param } from "@nestjs/common";
 import { OrderDetailService } from "./orderDetail.service"
 import { OrderDetail } from "@prisma/client";
 import { ApiTags } from "@nestjs/swagger";
@@ -25,7 +25,7 @@ export class OrderDetailController{
     }
 
     @Delete(':id')
-    async deletePet(@Query('id') id: string){
+    async deletePet(@Param('id') id: string){
         return await this.orderDetailService.deleteOrderDetail(id);
     }
 }

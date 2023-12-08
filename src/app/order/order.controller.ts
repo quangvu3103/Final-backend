@@ -8,6 +8,9 @@ import { Roles } from "src/common/decorator/roles.decorator";
 import { Role } from "src/common/enums/role.enum";
 import { MyJwtGuard } from "src/common/guard";
 import { RolesGuard } from "src/common/guard/roles.guard";
+import { GetUser } from "src/common/decorator";
+import { ConfirmDTO } from "./confirm.dto";
+import { CheckOutDTO } from "./checkOut.dto";
 
 @Controller('order')
 @ApiTags('Order')
@@ -20,25 +23,45 @@ export class OrderController{
     ){}
     
 
-    
+    @Roles(Role.Admin)
     @Get()
     async getAll():Promise<Order[]>{
         return await this.orderService.getOrders();
     }
 
+    @Get('by-user')
+    async getAllByUser(@GetUser('sub') id: string):Promise<Order[]>{
+        return await this.orderService.getOrdersByUser(id);
+    }
+
+    @Get('get-card')
+    async getCard(@GetUser('sub') userId: string):Promise<Order>{
+        return await this.orderService.getCart(userId)
+    }
+
+    @Roles(Role.Admin, Role.User)
     @Get('order/:id')
     async getOrderById(@Param('id') id:string):Promise<Order>{
         return await this.orderService.getOrderById(id);
     }
     @Post()
-    async create(@Body() order: OrderDto): Promise<Order>{
-        return await this.orderService.createOrder(order);
+    async create(@GetUser('sub') userId: string, @Body() order: OrderDto): Promise<Order>{
+        return await this.orderService.createOrder(userId, order);
     }
 
-
+    @Patch('checkoutOrder')
+    async checkOut(@Body() checkOutDTO : CheckOutDTO){
+        return await this.orderService.checkOut(checkOutDTO);
+    }
     @Patch()
     async updatePet(@Body() order: OrderDto): Promise<Order>{
         return await this.orderService.updateOrder(order);
     }
+
+    @Patch('confirm')
+    async confirm(@Body() confirmDTO : ConfirmDTO): Promise<Order>{
+        return await this.orderService.confirmOrder(confirmDTO);
+    }
+
 
 }

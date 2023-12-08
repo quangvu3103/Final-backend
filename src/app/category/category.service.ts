@@ -40,6 +40,17 @@ export class CategoryService {
         })
     }
     async deleteCategory(id: string) {
+        const currentCategory = await this.prismaService.category.findUnique({
+            where:{
+                id: id
+            },
+            include:{
+                products: true
+            }
+        })
+        if(currentCategory.products.length > 0){
+            throw new NotFoundException('Not delete if have product')
+        }
         return await this.prismaService.category.delete({
             where: {
                 id: id

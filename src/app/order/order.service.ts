@@ -3,6 +3,9 @@ import { Body, ForbiddenException, Injectable } from "@nestjs/common";
 import { Order } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { OrderDto } from "./order.Dto";
+import { orderDetailsDto } from "../orderdetail/orderDetail.Dto";
+import { ConfirmDTO } from "./confirm.dto";
+import { CheckOutDTO } from "./checkOut.dto";
 
 @Injectable()
 export class OrderService{
@@ -15,33 +18,119 @@ export class OrderService{
         return await this.prismaService.order.findMany()
     }
 
+    async getOrdersByUser(id: string):Promise<Order[]>{
+        return await this.prismaService.order.findMany({
+            where:{
+                userId:id,
+            
+            }
+        })
+    }
+
     async getCart(id: string):Promise<Order>{
-        return await this.prismaService.order.findUnique({
+        return await this.prismaService.order.findFirst({
             where:{
-                userId: id
+                userId: id,
+                status: 'IN_PROGRESS'
+            },
+            include:{
+                orderDetails: {
+                    include:{
+                        product: {
+                            include:{
+                                images:true
+                            }
+                        }
+                    }
+                }
             }
         })
     }
 
-    async createOrder(@Body() order : OrderDto): Promise<Order>{
-        const currentOrder = await this.prismaService.order.findUnique({
-            where:{
-                id: order.id
+    async createOrder(userId: string, @Body() orderDTO: OrderDto): Promise<Order> {
+        const {quantity,productId, ...order} = orderDTO
+        const currentOrder = await this.prismaService.order.findFirst({
+            where: {
+                userId: userId,
+                status: 'IN_PROGRESS'
             }
-        })
-        let newOrder : any
-        if(!currentOrder){
+        });
+        console.log(currentOrder)
+        let newOrder: any;
+        if (!currentOrder) {
             newOrder = await this.prismaService.order.create({
-                data:order
+                data: {
+                    ...order,
+                    dateOrder: new Date(),
+                    userId : userId,
+                    totalPrice: orderDTO.totalPrice
+                }
+            });
+        } else {
+            newOrder = await this.prismaService.order.findUnique({
+                where:{
+                    id:currentOrder.id
+                }
             })
-        }else(
-            newOrder = await this.updateOrder(order)
-        )
+        }
 
-        return newOrder 
+        const product = await this.prismaService.product.findUnique({
+            where:{
+                id: productId
+            }
+        })
+        const currentOrderDetails = await this.prismaService.orderDetail.findFirst({
+            where:{
+                productId: product.id,
+                orderId:newOrder.id
+            }
+        })
+        if(currentOrderDetails){
+            const quantityToUpdate = currentOrderDetails.quantity + 1
+            console.log(quantityToUpdate)
+            await this.prismaService.orderDetail.update({
+                where:{
+                    id: currentOrderDetails.id
+                },data:{
+                    quantity : quantityToUpdate,
+                    price: currentOrderDetails.price * quantityToUpdate
+                }
+            })
+        }else{
+            console.log(quantity)
+            await this.prismaService.orderDetail.create({
+                data:{
+                    orderId: newOrder.id,
+                    price: product.price,
+                    quantity: quantity,
+                    productId: productId
+                }
+            })
+        }
+
+        const totalOrderDetail = await this.prismaService.orderDetail.findMany({
+            where:{
+                orderId: newOrder.id
+            }
+        })
+        let price = 0;
+        for(let i=0;i < totalOrderDetail.length ; i++){
+            price += totalOrderDetail[i].price;
+            
+        }await this.prismaService.order.update({
+                where:{
+                    id: newOrder.id
+                },
+                data:{
+                    totalPrice:price
+                }
+            })
+        return newOrder;
     }
+    
 
-    async updateOrder(@Body() order: OrderDto): Promise<Order>{
+    async updateOrder(@Body() orderDTO: OrderDto): Promise<Order>{
+        const {quantity,productId, ...order} = orderDTO
         return await this.prismaService.order.update({
             where:{
                 id: order.id,
@@ -56,14 +145,44 @@ export class OrderService{
         return  await this.prismaService.order.findUnique({
             where:{
                 id:id
-            },
-           
+            },       
             include:{
-                orderDetails:true
+                orderDetails:{
+                    include:{
+                        product: {
+                            include:{
+                                images:true
+                            }
+                        }
+                    }
+                }
             }
         });
 
     }
 
+    async confirmOrder(confirmDTO : ConfirmDTO):Promise<Order>{
+        return await this.prismaService.order.update({
+            where:{
+                id: confirmDTO.id
+            },
+            data:{
+                transactionId: confirmDTO.transactionId
+            }
+        })
+    }
+
+
+    async checkOut(checkOutDTO : CheckOutDTO) : Promise<Order>{
+        return this.prismaService.order.update({
+            where:{
+                id: checkOutDTO.orderId
+            },
+            data:{
+                transactionId: checkOutDTO.transactionId,
+                status: 'DONE'
+            }
+        })
+    }
     
 }

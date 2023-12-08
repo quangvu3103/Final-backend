@@ -1,8 +1,12 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from "@nestjs/swagger";
  export class UpdateProductDto{
-@ApiProperty()
-    
+    @ApiProperty()
     name?: string;
-    categoryId: string;
+    @ApiProperty()
+    price?: number;
+    @ApiProperty()
+    description?:string;
+    @ApiProperty()
+    quantity?: number
  }

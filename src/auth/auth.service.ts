@@ -154,8 +154,8 @@ export class authSevice {
                 password: hashedPassword
             }
         })
-        return await this.mailService.sendEmail('quangvunguyen153@gmail.com', 'vunqgcd191153@fpt.edu.vn', "hello long ngu", `New password is ${newPass}`)
-         
+         this.mailService.sendEmail('quangvunguyen153@gmail.com', 'vunqgcd191153@fpt.edu.vn', "hello long ngu", `New password is ${newPass}`)
+        return {msg: 'ok'} 
     }
 
 }

@@ -13,5 +13,4 @@ export class orderDetailsDto {
     quantity: number;
     @ApiProperty()
     productId: string;
-
 }
