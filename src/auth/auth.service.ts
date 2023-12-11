@@ -6,19 +6,25 @@ import * as argon from 'argon2';
 import { JwtService } from "@nestjs/jwt/dist";
 import { ConfigService } from "@nestjs/config";
 import { RegisterDTO } from "./dto/reigister.dto";
-
+import { OAuth2Client, LoginTicket } from 'google-auth-library';
 import { MailService } from "src/provide/mail/mail.service";
+
+// import { use } from "passport";
 @Injectable({
 
 
 })
 export class authSevice {
+    private readonly client: OAuth2Client;
     constructor(private prismaService: PrismaService,
                 private jwtService: JwtService,
                 private configService: ConfigService,
                 private mailService : MailService
         ){
-
+            this.client = new OAuth2Client(
+                '158445647177-4tjrglh879mk4iap37ch2qh8idc0sfs0.apps.googleusercontent.com',
+                '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'
+            );
     }
 
     async register(authDTO: RegisterDTO){
@@ -121,6 +127,7 @@ export class authSevice {
     async signJwtToken(userId: string, email: string, role: string):Promise<{accessToken:string}>{
         const payload = {
             sub: userId,
+            id: userId,
             email,
             role
         }
@@ -154,8 +161,59 @@ export class authSevice {
                 password: hashedPassword
             }
         })
-         this.mailService.sendEmail('quangvunguyen153@gmail.com', 'vunqgcd191153@fpt.edu.vn', "hello long ngu", `New password is ${newPass}`)
+         this.mailService.sendEmail('quangvunguyen153@gmail.com', 'vunqgcd191153@fpt.edu.vn', "This is New Password", `New password is ${newPass}`)
         return {msg: 'ok'} 
     }
 
+    async loginGoogle(token:string) : Promise<any>{
+        const ticket = await this.client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+          });
+          const { email, name, picture } = ticket.getPayload();
+
+          const userExit = await this.prismaService.user.findUnique({
+            where:{
+                email: email
+            },
+            include:{
+                userRole:true
+            }
+          })
+          if(userExit){
+            const role = await this.prismaService.role.findUnique({
+                where:{
+                    id: userExit.userRole?.[0].roleId
+                }
+            })
+            return await this.signJwtToken(userExit.id, userExit.email, role.name)
+          }
+
+        try{
+          const user = await this.prismaService.user.create({
+            data: {
+                email: email,
+                password: '',
+                username: name,
+            },
+             select:{
+                id: true,
+                email: true,
+             }
+         })
+         await this.prismaService.profile.create({
+            data:{
+                userId: user.id,
+                url: picture,
+                description: '',
+            }
+        })
+        const role = await this.createRole(user.id)
+        return await this.signJwtToken(user.id, user.email, role.name)
+        }catch(error){
+            if(error.code == 'P2002')
+            throw new ForbiddenException('Error in credentials')
+        }  
+    }
+    
 }

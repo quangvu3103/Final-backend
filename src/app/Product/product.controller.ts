@@ -20,10 +20,11 @@ export class ProductController{
     }
     @Get('search')
     async searchProduct(
+        @Query('name') name: string,
         @Query('minPrice') minPrice: string,
         @Query('maxPrice') maxPrice: string
      ):Promise<Product[]>{
-        return await this.productService.searchProduct(minPrice, maxPrice)
+        return await this.productService.searchProduct(name, minPrice, maxPrice)
     }
     @Get('category/:id')
     async getByCategory(@Param('id') id:string):Promise<Product[]>{
@@ -50,4 +51,6 @@ export class ProductController{
     async deletePet(@Param('id') id: string){
         return await this.productService.deleteproduct(id);
     }
+
+    
 }

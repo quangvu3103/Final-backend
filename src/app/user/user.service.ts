@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { ForbiddenException, Inject, Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import * as argon from 'argon2';
 import { ChangePasswordDTO } from "./dto/updatePassword.dto";
+import { SocketGateway } from "src/provide/socket/gateway";
 
 
 
@@ -12,6 +13,7 @@ import { ChangePasswordDTO } from "./dto/updatePassword.dto";
 export class UserService{
     constructor(
         private prismaService : PrismaService,
+        @Inject(SocketGateway) private socketGateway: SocketGateway
     ){}
 
     async changePassword(id: string, changePasswordDTO: ChangePasswordDTO) : Promise<User>{

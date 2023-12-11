@@ -2,9 +2,10 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { authSevice } from "./auth.service";
 import { AuthDTO } from "./dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiProperty, ApiTags } from "@nestjs/swagger";
 import { RegisterDTO } from "./dto/reigister.dto";
 import { ResetDTO } from "./dto/reset.dto";
+import { TokenDTO } from "./dto/token.dto";
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
@@ -23,5 +24,11 @@ export class AuthController {
     @Post('reset')
     async reset(@Body() reset: ResetDTO){
         return this.authService.resetPassword(reset.email)
+    }
+
+    @Post('login-google')
+    async loginByGoogle(@Body() token: TokenDTO): Promise<any> {
+      const ticket = await this.authService.loginGoogle(token.token);
+      return ticket;
     }
 }

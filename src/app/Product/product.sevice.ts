@@ -5,7 +5,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import {CreateProductDto} from "./createProduct.dto"
 import { UpdateProductDto } from "./updateProduct.dto";
 import { Product } from "@prisma/client";
-import { max } from "class-validator";
+import { contains, max } from "class-validator";
 
 @Injectable()
 export class ProductService{
@@ -107,10 +107,11 @@ export class ProductService{
         });
     }
 
-    async searchProduct(minPrice: string, maxPrice: string):Promise<Product[]>{
+    async searchProduct(name: string, minPrice: string, maxPrice: string):Promise<Product[]>{
 
         return await this.prismaService.product.findMany({
             where:{
+                name:{contains: name},
                 price:{
                     gte: parseInt(minPrice),
                     lte: parseInt(maxPrice)

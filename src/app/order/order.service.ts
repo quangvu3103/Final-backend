@@ -1,16 +1,18 @@
 /* eslint-disable prettier/prettier */
-import { Body, ForbiddenException, Injectable } from "@nestjs/common";
+import { Body, ForbiddenException, Inject, Injectable } from "@nestjs/common";
 import { Order } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { OrderDto } from "./order.Dto";
 import { orderDetailsDto } from "../orderdetail/orderDetail.Dto";
 import { ConfirmDTO } from "./confirm.dto";
 import { CheckOutDTO } from "./checkOut.dto";
+import { SocketGateway } from "src/provide/socket/gateway";
 
 @Injectable()
 export class OrderService{
     constructor(
         private prismaService : PrismaService,
+        @Inject(SocketGateway) private socketGateway: SocketGateway
     ){}
 
     
@@ -83,7 +85,8 @@ export class OrderService{
             where:{
                 productId: product.id,
                 orderId:newOrder.id
-            }
+            },
+            include: {product: true}
         })
         if(currentOrderDetails){
             const quantityToUpdate = currentOrderDetails.quantity + 1
@@ -93,7 +96,7 @@ export class OrderService{
                     id: currentOrderDetails.id
                 },data:{
                     quantity : quantityToUpdate,
-                    price: currentOrderDetails.price * quantityToUpdate
+                    price: currentOrderDetails.product.price * quantityToUpdate
                 }
             })
         }else{
@@ -174,15 +177,30 @@ export class OrderService{
 
 
     async checkOut(checkOutDTO : CheckOutDTO) : Promise<Order>{
-        return this.prismaService.order.update({
+        const order =  await this.prismaService.order.update({
             where:{
                 id: checkOutDTO.orderId
             },
             data:{
                 transactionId: checkOutDTO.transactionId,
                 status: 'DONE'
+            },
+            include:{
+                user:{
+                    select:{
+                        id: true,
+                        profile:{
+                            select:{
+                                fullName: true
+                            }
+                        }
+                    }
+                },
             }
         })
+        await this.socketGateway.sendNotification(order.userId, `${order.user.profile.fullName} payment ${order.id} success` ,"Payment_Success", order.id)
+
+        return order
     }
     
 }

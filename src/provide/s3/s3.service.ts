@@ -3,7 +3,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
-
 @Injectable()
 export class S3Service {
 private s3Client: S3Client;
@@ -40,8 +39,6 @@ private s3Client: S3Client;
         throw new Error('Lỗi khi tải lên tệp lên Amazon S3.');
       }
   }
-
-
 
   async  uploadMultipleFiles(files: Express.Multer.File[], path: string): Promise<string[]> {
     const fileUrls: string[] = [];

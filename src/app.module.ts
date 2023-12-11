@@ -13,13 +13,16 @@ import { FileModule } from './app/file/file.module';
 import { S3Module } from './provide/s3/s3.module';
 import { UserModule } from './app/user/user.module';
 import { ProductImgModule } from './app/productImg/productImg.module';
+import { NotificationModule } from './app/notification/notification.module';
+import { SocketModule } from './provide/socket/socket.module';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-    isGlobal: true,
-  }),
+      isGlobal: true,
+    }),
+    SocketModule,
   AuthModule,
   UserModule,
   PrismaModule,
@@ -31,7 +34,9 @@ import { ProductImgModule } from './app/productImg/productImg.module';
   ProfileModule,
   FileModule,
   S3Module,
-  ProductImgModule
+  ProductImgModule,
+  NotificationModule,
+
   
   ],
   controllers: [],
