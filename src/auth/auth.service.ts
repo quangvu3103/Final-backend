@@ -140,6 +140,11 @@ export class authSevice {
         }
     }
 
+    async sendFeedback(message: string){
+         this.mailService.sendEmail('quangvunguyen153@gmail.com', 'vunqgcd191153@fpt.edu.vn', "New Feedback",message)
+        return {msg: 'ok'} 
+    }
+
     async resetPassword(email: string){
         const user = this.prismaService.user.findUnique({
             where:{

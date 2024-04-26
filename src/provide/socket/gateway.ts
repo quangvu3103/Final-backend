@@ -12,17 +12,14 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private noficationService: NotificationService,
   ) {}
-
+///websocket
   async handleConnection(socket: Socket) {
     socket.on('join', async (userId) => {
         console.log(userId)
         socket.join(userId); 
-    
     });
 
-    socket.on('joinRoom', (roomId) => {
-      socket.join(roomId); 
-    });
+
   }
   async handleDisconnect(socket: Socket) {
     try {
@@ -36,6 +33,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     try {
       
       const notificationData = await this.noficationService.createNotification(userId, title, action, id);
+      //evevnt
       this.server.to(userId).emit('notification-received', notificationData)
     } catch (error) {
       console.error('Error sending notification:', error.message);

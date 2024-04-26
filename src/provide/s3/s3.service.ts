@@ -20,6 +20,7 @@ private s3Client: S3Client;
           },
     });
   }
+  
   async uploadFile(file: Express.Multer.File, path: string,): Promise<string> {
     const fileData = file.buffer;
     
@@ -29,14 +30,14 @@ private s3Client: S3Client;
       Body: fileData,
       ContentType: file.mimetype,
     };
-
+//buffer
     const command = new PutObjectCommand(params);
     const response = await this.s3Client.send(command);
     if (response.$metadata.httpStatusCode === 200) {
         const fileUrl = `https://${this.cloundFront}/${params.Key}`;
         return fileUrl;
       } else {
-        throw new Error('Lỗi khi tải lên tệp lên Amazon S3.');
+        throw new Error('Error uploading files to Amazon S3.');
       }
   }
 

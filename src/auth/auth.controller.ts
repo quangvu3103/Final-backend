@@ -6,6 +6,7 @@ import { ApiProperty, ApiTags } from "@nestjs/swagger";
 import { RegisterDTO } from "./dto/reigister.dto";
 import { ResetDTO } from "./dto/reset.dto";
 import { TokenDTO } from "./dto/token.dto";
+import { ContentDTO } from "./dto/sendfeedback.dto";
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
@@ -24,6 +25,11 @@ export class AuthController {
     @Post('reset')
     async reset(@Body() reset: ResetDTO){
         return this.authService.resetPassword(reset.email)
+    }
+
+    @Post('sendFeedback')
+    async sendFeedback(@Body() reset: ContentDTO){
+        return this.authService.sendFeedback(reset.content)
     }
 
     @Post('login-google')

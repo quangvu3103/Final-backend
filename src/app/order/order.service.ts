@@ -7,6 +7,7 @@ import { orderDetailsDto } from "../orderdetail/orderDetail.Dto";
 import { ConfirmDTO } from "./confirm.dto";
 import { CheckOutDTO } from "./checkOut.dto";
 import { SocketGateway } from "src/provide/socket/gateway";
+import moment from "moment-timezone"
 
 @Injectable()
 export class OrderService{
@@ -17,7 +18,17 @@ export class OrderService{
 
     
     async getOrders():Promise<Order[]>{
-        return await this.prismaService.order.findMany()
+        return await this.prismaService.order.findMany({
+            include:{
+                user:{
+                    include:{
+                        profile:true
+                    }
+                },
+                
+            }
+
+        })
     }
 
     async getOrdersByUser(id: string):Promise<Order[]>{
@@ -165,25 +176,31 @@ export class OrderService{
     }
 
     async confirmOrder(confirmDTO : ConfirmDTO):Promise<Order>{
+        const vietnamTime = moment().tz('Asia/Ho_Chi_Minh');
+
         return await this.prismaService.order.update({
             where:{
                 id: confirmDTO.id
             },
             data:{
-                transactionId: confirmDTO.transactionId
+                transactionId: confirmDTO.transactionId,
+                dateOrder: vietnamTime.toDate()
             }
         })
     }
 
 
-    async checkOut(checkOutDTO : CheckOutDTO) : Promise<Order>{
+    async checkOut(checkOutDTO : CheckOutDTO) : Promise<Order>{        
+        const vietnamTime = new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' });
+        
         const order =  await this.prismaService.order.update({
             where:{
                 id: checkOutDTO.orderId
             },
             data:{
                 transactionId: checkOutDTO.transactionId,
-                status: 'DONE'
+                status: 'DONE',
+                dateOrder: new Date(vietnamTime).toISOString()
             },
             include:{
                 user:{

@@ -5,11 +5,24 @@ import { PrismaService } from "src/prisma/prisma.service";
 import {CreateProductDto} from "./createProduct.dto"
 import { UpdateProductDto } from "./updateProduct.dto";
 import { Product } from "@prisma/client";
-import { contains, max } from "class-validator";
 
 @Injectable()
 export class ProductService{
   constructor(private prismaService: PrismaService) {}
+
+  async getproductByName(name: string): Promise<string> {
+    console.log("name")
+      await this.prismaService.product.findMany({
+        where:{
+            isDelete: false,
+            name: {contains: name}
+        },
+        include:{
+            images:true
+        }
+    });
+    return "asdasd"
+}
 
   async getproduct(): Promise<Product[]> {
         return  await this.prismaService.product.findMany({
@@ -22,7 +35,6 @@ export class ProductService{
                 images:true
             }
         });
-
     }
 
     async getproductById(id: string): Promise<Product> {

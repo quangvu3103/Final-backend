@@ -40,6 +40,10 @@ export class ProductController{
         return await this.productService.getproductById(id);
     }
 
+    @Get('searchByName')
+    async getProductByName(@Query('name') name:string) :Promise<string>{
+        return await this.productService.getproductByName(name);
+    }
 
     @Put(':id')
     async updateProduct(@Param('id') id: string,@Body() product: UpdateProductDto): Promise<Product>{

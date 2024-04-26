@@ -19,7 +19,7 @@ export class FileService {
     }
 
     async multiUpload(files: Express.Multer.File[]): Promise<string[]> {
-        return this.s3Serivce.uploadMultipleFiles(files, 'hotels/');
+        return this.s3Serivce.uploadMultipleFiles(files, 'petshop/');
       }
     
 }
