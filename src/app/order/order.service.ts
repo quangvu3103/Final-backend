@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import { Body, ForbiddenException, Inject, Injectable } from "@nestjs/common";
-import { Order } from "@prisma/client";
+import { Order, OrderDetail } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { OrderDto } from "./order.Dto";
 import { orderDetailsDto } from "../orderdetail/orderDetail.Dto";
@@ -100,14 +100,13 @@ export class OrderService{
             include: {product: true}
         })
         if(currentOrderDetails){
-            const quantityToUpdate = currentOrderDetails.quantity + 1
-            console.log(quantityToUpdate)
+            const quantity2 = currentOrderDetails.quantity + quantity
             await this.prismaService.orderDetail.update({
                 where:{
                     id: currentOrderDetails.id
                 },data:{
-                    quantity : quantityToUpdate,
-                    price: currentOrderDetails.product.price * quantityToUpdate
+                    quantity :quantity2,
+                    price: currentOrderDetails.product.price * quantity2
                 }
             })
         }else{
@@ -142,7 +141,6 @@ export class OrderService{
         return newOrder;
     }
     
-
     async updateOrder(@Body() orderDTO: OrderDto): Promise<Order>{
         const {quantity,productId, ...order} = orderDTO
         return await this.prismaService.order.update({

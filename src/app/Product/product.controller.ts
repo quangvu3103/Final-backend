@@ -16,16 +16,16 @@ export class ProductController{
     
     @Get()
     async getAll():Promise<Product[]>{
-        return await this.productService.getproduct();
+        return await this.productService.getproductByName("name");
     }
+
+
     @Get('search')
-    async searchProduct(
-        @Query('name') name: string,
-        @Query('minPrice') minPrice: string,
-        @Query('maxPrice') maxPrice: string
-     ):Promise<Product[]>{
-        return await this.productService.searchProduct(name, minPrice, maxPrice)
+    async getProductByName(@Query('name') name: string):Promise<Product[]>{
+        return await this.productService.getproductByName(name);
     }
+
+
     @Get('category/:id')
     async getByCategory(@Param('id') id:string):Promise<Product[]>{
         return await this.productService.getproductByCategory(id);
@@ -40,11 +40,7 @@ export class ProductController{
         return await this.productService.getproductById(id);
     }
 
-    @Get('searchByName')
-    async getProductByName(@Query('name') name:string) :Promise<string>{
-        return await this.productService.getproductByName(name);
-    }
-
+   
     @Put(':id')
     async updateProduct(@Param('id') id: string,@Body() product: UpdateProductDto): Promise<Product>{
         return await this.productService.updateproduct(id, product);

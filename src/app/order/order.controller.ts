@@ -2,7 +2,7 @@
 import { Controller, Get, Post, Body, Put, Delete, Query, Param, UseGuards, Patch } from "@nestjs/common";
 import { OrderService } from "./order.service";
 import { OrderDto } from "./order.Dto";
-import { Order } from "@prisma/client";
+import { Order, OrderDetail } from "@prisma/client";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Roles } from "src/common/decorator/roles.decorator";
 import { Role } from "src/common/enums/role.enum";

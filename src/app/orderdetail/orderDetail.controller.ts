@@ -1,9 +1,10 @@
 /* eslint-disable prettier/prettier */
 import { Controller, Post, Body, Put, Delete, Query, Param } from "@nestjs/common";
 import { OrderDetailService } from "./orderDetail.service"
-import { OrderDetail } from "@prisma/client";
+import { Order, OrderDetail } from "@prisma/client";
 import { ApiTags } from "@nestjs/swagger";
 import { orderDetailsDto } from "./orderDetail.Dto";
+import { updateOrderDetailsDto } from "./updateOrderDetails.Dto";
 
 @Controller('OrderDetail')
 @ApiTags('OrderDetail')
@@ -19,13 +20,13 @@ export class OrderDetailController{
     }
 
 
-    @Put(':id')
-    async updateOrderDetail(@Query('id') id: string,@Body() orderDetail : orderDetailsDto): Promise<OrderDetail>{
+    @Put()
+    async updateOrderDetail(@Query('id') id: string,@Body() orderDetail : updateOrderDetailsDto): Promise<Order>{
         return await this.orderDetailService.updateOrderDetail(id, orderDetail);
     }
 
     @Delete(':id')
-    async deletePet(@Param('id') id: string){
+    async deleteOrderDetail(@Param('id') id: string): Promise<Order>{
         return await this.orderDetailService.deleteOrderDetail(id);
     }
 }

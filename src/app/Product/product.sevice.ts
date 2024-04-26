@@ -10,18 +10,17 @@ import { Product } from "@prisma/client";
 export class ProductService{
   constructor(private prismaService: PrismaService) {}
 
-  async getproductByName(name: string): Promise<string> {
+  async getproductByName(name: string): Promise<Product[]> {
     console.log("name")
-      await this.prismaService.product.findMany({
+    return await this.prismaService.product.findMany({
         where:{
-            isDelete: false,
-            name: {contains: name}
+            name: {contains: name},
+            isDelete: false
         },
         include:{
             images:true
         }
     });
-    return "asdasd"
 }
 
   async getproduct(): Promise<Product[]> {
@@ -124,6 +123,7 @@ export class ProductService{
         return await this.prismaService.product.findMany({
             where:{
                 name:{contains: name},
+                
                 price:{
                     gte: parseInt(minPrice),
                     lte: parseInt(maxPrice)
