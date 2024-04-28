@@ -15,7 +15,7 @@ import { CheckOutDTO } from "./checkOut.dto";
 @Controller('order')
 @ApiTags('Order')
 @ApiBearerAuth('Jwt-auth')
-@Roles(Role.User)
+// @Roles(Role.User)
 @UseGuards(MyJwtGuard, RolesGuard)
 export class OrderController{
     constructor(
@@ -62,6 +62,16 @@ export class OrderController{
     async confirm(@Body() confirmDTO : ConfirmDTO): Promise<Order>{
         return await this.orderService.confirmOrder(confirmDTO);
     }
+    @Roles(Role.Admin)
+    @Get('revenue-by-month')
+    async getTotalRevenueByMonth() {
+      return this.orderService.getTotalRevenueByMonth();
+    }
 
+    @Roles(Role.Admin)
+    @Get('revenue-count-by-month')
+    async getOrderCountByMonth() {
+      return this.orderService.getOrderCountByMonth();
+    }
 
 }

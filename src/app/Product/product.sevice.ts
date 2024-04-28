@@ -5,13 +5,13 @@ import { PrismaService } from "src/prisma/prisma.service";
 import {CreateProductDto} from "./createProduct.dto"
 import { UpdateProductDto } from "./updateProduct.dto";
 import { Product } from "@prisma/client";
+import { max } from "class-validator";
 
 @Injectable()
 export class ProductService{
   constructor(private prismaService: PrismaService) {}
 
   async getproductByName(name: string): Promise<Product[]> {
-    console.log("name")
     return await this.prismaService.product.findMany({
         where:{
             name: {contains: name},
@@ -50,16 +50,23 @@ export class ProductService{
 
     }
 
-    async getproductByCategory(id: string):Promise<Product[]>{
-        return  await this.prismaService.product.findMany({
-            where:{
-                categoryId:id,
-                isDelete: false
+    async getproductByCategory(id: string, minPrice: string, maxPrice: string):Promise<Product[]>{
+        return await this.prismaService.product.findMany({
+            where: {
+                AND: [
+                    { categoryId: id },
+                    { isDelete: false },
+                    { price: { gte: parseInt(minPrice) , lte:  parseInt(maxPrice)  } }, 
+                
+                ]
             },
-            skip:0,
-            take:6,
-            include:{
-                images:true
+            skip: 0,
+            take: 6,
+            orderBy: {
+                price: 'asc' // hoặc 'desc' nếu bạn muốn sắp xếp giảm dần
+            },
+            include: {
+                images: true
             }
         });
 

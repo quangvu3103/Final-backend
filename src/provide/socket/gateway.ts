@@ -15,7 +15,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
 ///websocket
   async handleConnection(socket: Socket) {
     socket.on('join', async (userId) => {
-        console.log(userId)
+  
         socket.join(userId); 
     });
 
@@ -23,7 +23,7 @@ export class SocketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   async handleDisconnect(socket: Socket) {
     try {
-        console.log(socket)
+
     } catch (error) {
       console.error("Error while removing user socket info:", error);
     }

@@ -22,8 +22,8 @@ export class authSevice {
                 private mailService : MailService
         ){
             this.client = new OAuth2Client(
-                '158445647177-4tjrglh879mk4iap37ch2qh8idc0sfs0.apps.googleusercontent.com',
-                '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'
+                process.env.GOOGLE_CLIENT_ID,
+                process.env.GOOGLE_CLIENT_SECRET,
             );
     }
 
@@ -87,7 +87,7 @@ export class authSevice {
                 }
             });
     }catch{
-        console.log("asd")
+      
     }
     return role
     }
@@ -175,6 +175,7 @@ export class authSevice {
             idToken: token,
             audience: process.env.GOOGLE_CLIENT_ID,
           });
+          console.log(ticket)
           const { email, name, picture } = ticket.getPayload();
 
           const userExit = await this.prismaService.user.findUnique({

@@ -27,8 +27,8 @@ export class ProductController{
 
 
     @Get('category/:id')
-    async getByCategory(@Param('id') id:string):Promise<Product[]>{
-        return await this.productService.getproductByCategory(id);
+    async getByCategory(@Param('id') id:string, @Query('minPice') minPrice: string, @Query('maxPrice')maxPrice: string):Promise<Product[]>{
+     return await this.productService.getproductByCategory(id, minPrice, maxPrice);
     }
     @Post()
     async create(@Body() product: CreateProductDto): Promise<Product>{

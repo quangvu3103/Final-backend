@@ -68,15 +68,16 @@ export class OrderService{
                 status: 'IN_PROGRESS'
             }
         });
-        console.log(currentOrder)
+
         let newOrder: any;
         if (!currentOrder) {
+            const totalPrice = order.totalPrice * quantity
             newOrder = await this.prismaService.order.create({
                 data: {
                     ...order,
                     dateOrder: new Date(),
                     userId : userId,
-                    totalPrice: orderDTO.totalPrice
+                    totalPrice: totalPrice
                 }
             });
         } else {
@@ -110,11 +111,11 @@ export class OrderService{
                 }
             })
         }else{
-            console.log(quantity)
+            const totalPrice = product.price * quantity
             await this.prismaService.orderDetail.create({
                 data:{
                     orderId: newOrder.id,
-                    price: product.price,
+                    price: totalPrice,
                     quantity: quantity,
                     productId: productId
                 }
@@ -217,5 +218,54 @@ export class OrderService{
 
         return order
     }
+
+    async getTotalRevenueByMonth(): Promise<any> {
+        const orders = await this.prismaService.order.findMany({
+          select: {
+            dateOrder: true,
+            totalPrice: true,
+          },
+        });
+    
+        const revenueByMonth = orders.reduce((acc, order) => {
+          const month = new Date(order.dateOrder).getMonth() + 1; // Lấy tháng từ dateOrder
+          acc[month] = (acc[month] || 0) + order.totalPrice;
+          return acc;
+        }, {});
+    
+        // Chuyển đổi định dạng thành mảng
+        return Object.entries(revenueByMonth).map(([month, revenue]) => ({
+          month: parseInt(month),
+          revenue,
+        }));
+      }
+    
+      async getOrderCountByMonth(): Promise<any> {
+        const orders = await this.prismaService.order.findMany();
+        const orderCountByQuarter: { [quarter: number]: number } = {};
+    
+        orders.forEach(order => {
+            const quarter = this.getQuarter(new Date(order.dateOrder));
+            if (orderCountByQuarter[quarter]) {
+                orderCountByQuarter[quarter]++;
+            } else {
+                orderCountByQuarter[quarter] = 1;
+            }
+        });
+    
+        const result = Object.entries(orderCountByQuarter).map(([quarter, orderCount]) => ({
+            quarter: parseInt(quarter),
+            orderCount,
+        }));
+    
+        return result;
+      }
+
+      getQuarter(date: Date): number {
+        const month = date.getMonth();
+        return Math.floor(month / 3) + 1;
+    }
+    
+
     
 }
